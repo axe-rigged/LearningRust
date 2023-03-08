@@ -33,4 +33,7 @@ fn main() {
     dog.push_str(" is animal");
     println!("My string: {}", dog);
     //format!("{string 1} {string2}") lets ass format string inside "" and parse value to variable
+
+    let refe_dog: &str = &dog[0..4];
+    println!("{}", refe_dog);
 }

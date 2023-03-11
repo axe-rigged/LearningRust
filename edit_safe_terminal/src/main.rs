@@ -2,9 +2,10 @@ use std::env;
 use std::fs::File; //File::create(), File::open()
 use std::io;
 use std::io::Read; //Need for reading, sad it is not inside fs::File, but Im not smart to understand that why
+use std::io::Write;
 
 enum Choice {
-    Add,
+    Read,
     Copy,
 }
 
@@ -19,7 +20,7 @@ fn main() {
         let e_file = File::open(file).expect("No file found");
 
         println!("What you want do for the file? Use numbers");
-        println!("1)Add text\n2)Backup\n");
+        println!("1)Read text\n2)Backup\n");
 
         let mut choice = String::new();
 
@@ -33,21 +34,14 @@ fn main() {
         };
 
         let optio: Choice = match choice_int {
-            1 => Choice::Add,
+            1 => Choice::Read,
             2 => Choice::Copy,
             _ => Choice::Copy,
         };
 
         match optio {
-            Choice::Add => add_to_file(&e_file),
-            // Choice::Add => {
-            //     let mut txt = String::new();
-            //     e_file
-            //         .read_to_string(&mut txt)
-            //         .expect("error while writing");
-            //     println!("{}", txt);
-            // }
-            Choice::Copy => backup_file(),
+            Choice::Read => add_to_file(e_file),
+            Choice::Copy => backup_file(e_file),
         };
     } else {
         println!("There was no .txt file given.");
@@ -57,12 +51,30 @@ fn main() {
     }
 }
 
-fn add_to_file(mut x: &File) {
+fn add_to_file(mut x: File) {
     let mut txt = String::new();
     x.read_to_string(&mut txt).expect("Error while writing");
     println!("{}", txt);
 }
 
-fn backup_file() {
-    println!("Backup file");
+fn backup_file(mut x: File) {
+    let mut file_name = String::new();
+    let mut copy_txt = String::new();
+    x.read_to_string(&mut copy_txt)
+        .expect("Error while writing");
+
+    println!("What name should the file have?");
+    io::stdin()
+        .read_line(&mut file_name)
+        .expect("Something went wrong went it should not");
+
+    let file_name = file_name.trim(); //<-- should remeber basic function/methods for int, str/rings, arrays, vectors
+    let copy_file = File::create(file_name);
+    let copy_txt = copy_txt.as_bytes();
+    match copy_file {
+        Err(_) => println!("Something went wrong while typing"),
+        Ok(mut copy_file) => {
+            copy_file.write_all(copy_txt).unwrap(); //<-- Can explode
+        }
+    }
 }

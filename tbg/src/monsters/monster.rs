@@ -1,1 +1,1 @@
-struct Skeleton {};
+struct Skeleton {}
